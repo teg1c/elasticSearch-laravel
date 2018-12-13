@@ -165,22 +165,6 @@ class EsModel
 		return $result;
 	}
 	
-	public function find($id)
-	{
-		try {
-			$this->client->getParamsBuilder()
-			             ->setMethod("delete")
-			             ->setIndex($this->index)
-			             ->setType($this->type)
-			             ->setID($id);
-			
-			$result = $this->client->search();
-		} catch (\Exception $e) {
-			throw $e;
-		}
-		return $result;
-	}
-	
 	public function delete($id)
 	{
 		try {
