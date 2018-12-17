@@ -41,8 +41,8 @@ class EsModel
 			$index = (array) $index;
 		}
 		$type = $type ?? $index;
-		if (!is_array($type)) {
-			$type = (array) $type;
+		if (!$type) {
+			$type = $index;
 		}
 		return new static($index, $type);
 	}
