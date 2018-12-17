@@ -4,6 +4,10 @@ Elasticsearch for Laravel
 
 ### 使用
 
+composer 安装
+
+`composer require teg1c/thinkphp-qiniu-sdk`
+
 首先创建Model
 
 ```php
