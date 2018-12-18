@@ -84,7 +84,7 @@ class EsModel
 		return $this;
 	}
 	
-	public function fristpagesize($firstpagesize = 0)
+	public function firstpagesize($firstpagesize = 0)
 	{
 		$this->firstpagesize = $firstpagesize;
 		return $this;
