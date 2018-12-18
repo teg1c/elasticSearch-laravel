@@ -24,7 +24,7 @@ class EsModel
 	protected $sort = [];
 	protected $client = null;
 	
-	public function __construct($index, $type = '', $host)
+	public function __construct($index, $type, $host)
 	{
 		if (!$host) {
 			$config     = config('setting.elasticsearch');
@@ -161,7 +161,25 @@ class EsModel
 		
 		return $this;
 	}
-	
+	public function transformHits($result)
+	{
+		$return_hits['data'] = [];
+		$page = $this->getQuery();
+		$return_hits['total'] = 0;
+		if (isset($result['hits']['hits']) && count($result['hits']['hits']) > 0) {
+			$hits = $result['hits']['hits'];
+			foreach ($hits as $k => $v) {
+				$v['_source']['index'] = $v['_index'];
+				$v['_source']['index_id'] = array_search($v['_index'], (array)$this->index);
+				$return_hits['data'][] = $v['_source'];
+			}
+//            $return_hits['data'] = arraySequence($return_hits['data'], 'score');
+			$return_hits['total'] = $result['hits']['total'];
+		}
+		$return_hits['page'] = $page['from'] / $page['size'] + 1;
+		$return_hits['pageSize'] = $page['size'];
+		return $return_hits;
+	}
 	
 	public function get()
 	{
@@ -176,10 +194,9 @@ class EsModel
 		} catch (\Exception $e) {
 			throw $e;
 		}
-		
+		$result = $this->transformHits($result['data']);
 		return $result;
 	}
-	
 	public function find()
 	{
 		try {
@@ -196,7 +213,6 @@ class EsModel
 		$result = ( isset($result['data']['hits']['hits']) && !empty($result['data']['hits']['hits']) ) ? $result['data']['hits']['hits'][0]['_source'] : false;
 		return $result;
 	}
-	
 	public function delete($id)
 	{
 		try {
