@@ -316,7 +316,9 @@ class EsModel
 		$firstpagesize = (int) $this->firstpagesize;
 		$from          = ( $page - 1 ) * $pageSize;
 		if ($this->firstpagesize && $page > 1) {
-			$from = ( ( $page - 2 ) * $pageSize ) + $firstpagesize;
+			if ($pageSize != $firstpagesize) {
+				$from = ( ( $page - 2 ) * $pageSize ) + $firstpagesize;
+			}
 		}
 		$this->query = [
 			"_source" => $this->sourceStatus,
