@@ -24,7 +24,7 @@ class EsModel
 	protected $sort = [];
 	protected $client = null;
 	
-	public function __construct($index, $type, $host)
+	public function __construct($index, $type = '', $host)
 	{
 		if (!$host) {
 			$config     = config('setting.elasticsearch');
@@ -176,6 +176,7 @@ class EsModel
 		
 		return $result;
 	}
+	
 	public function find()
 	{
 		try {
@@ -192,6 +193,7 @@ class EsModel
 		$result = ( isset($result['data']['hits']['hits']) && !empty($result['data']['hits']['hits']) ) ? $result['data']['hits']['hits'][0]['_source'] : false;
 		return $result;
 	}
+	
 	public function delete($id)
 	{
 		try {
