@@ -22,7 +22,6 @@ class EsModel
 	protected $pagesize = 15;
 	protected $firstpagesize = 0;
 	protected $page = 1;
-	protected $from = 0;
 	protected $sort = [];
 	protected $client = null;
 	
@@ -316,7 +315,7 @@ class EsModel
 		$pageSize      = (int) $this->pagesize;
 		$firstpagesize = (int) $this->firstpagesize;
 		$from          = ( $page - 1 ) * $pageSize;
-		if ($this->from && $this->firstpagesize) {
+		if ($this->firstpagesize) {
 			$from = ( ( $page - 2 ) * $pageSize ) + $firstpagesize;
 		}
 		$this->query = [
