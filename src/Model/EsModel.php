@@ -21,6 +21,7 @@ class EsModel
 	protected $perPage = 15;
 	protected $pagesize = 15;
 	protected $page = 1;
+	protected $from = 0;
 	protected $sort = [];
 	protected $client = null;
 	
@@ -76,7 +77,11 @@ class EsModel
 		$this->sort = $sort;
 		return $this;
 	}
-	
+	public function from($from = 0)
+	{
+		$this->from = $from;
+		return $this;
+	}
 	public function page($page = 1)
 	{
 		$this->page = $page;
@@ -297,6 +302,11 @@ class EsModel
 	{
 		$page        = (int) app(Request::class)->get('page', $this->page);
 		$pageSize    = (int) app(Request::class)->get('pagesize', $this->pagesize);
+		
+		$from = ( $page - 1 ) * $pageSize;
+		if ($this->from){
+			$from = $this->from;
+		}
 		$this->query = [
 			"_source" => $this->sourceStatus,
 			"query"   => [
@@ -308,7 +318,7 @@ class EsModel
 			],
 			'sort'    => $this->sort,
 			'size'    => $pageSize,
-			'from'    => ( $page - 1 ) * $pageSize,
+			'from'    => $from,
 		];
 		
 		return $this->query;
