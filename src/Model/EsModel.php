@@ -315,7 +315,7 @@ class EsModel
 		$pageSize      = (int) $this->pagesize;
 		$firstpagesize = (int) $this->firstpagesize;
 		$from          = ( $page - 1 ) * $pageSize;
-		if ($this->firstpagesize) {
+		if ($this->firstpagesize && $page > 1) {
 			$from = ( ( $page - 2 ) * $pageSize ) + $firstpagesize;
 		}
 		$this->query = [
