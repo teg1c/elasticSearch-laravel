@@ -24,8 +24,20 @@ class EsModel
 	protected $sort = [];
 	protected $client = null;
 	
-	public function __construct($index, $type)
+	public function __construct($index, $type, $host)
 	{
+		if (!$host) {
+			$config     = config('setting.elasticsearch');
+			$this->host = $config['host'];
+			$this->port = $config['port'];
+		}
+		if (!is_array($index)) {
+			$index = (array) $index;
+		}
+		$type = $type ?? $index;
+		if (!$type) {
+			$type = $index;
+		}
 		$this->index  = implode(',', $index);
 		$this->type   = implode(',', $type);
 		$this->client = EsClientBuilder::create()
@@ -35,7 +47,7 @@ class EsModel
 		                               ->build();
 	}
 	
-	public static function build($index, $type = '')
+	/*public static function build($index, $type = '')
 	{
 		if (!is_array($index)) {
 			$index = (array) $index;
@@ -45,7 +57,7 @@ class EsModel
 			$type = $index;
 		}
 		return new static($index, $type);
-	}
+	}*/
 	
 	public function select(...$selectParams)
 	{
@@ -164,7 +176,22 @@ class EsModel
 		
 		return $result;
 	}
-	
+	public function find()
+	{
+		try {
+			$this->client->getParamsBuilder()
+			             ->setMethod("search")
+			             ->setIndex($this->index)
+			             ->setType($this->type)
+			             ->setBody($this->getQuery());
+			
+			$result = $this->client->search();
+		} catch (\Exception $e) {
+			throw $e;
+		}
+		$result = ( isset($result['data']['hits']['hits']) && !empty($result['data']['hits']['hits']) ) ? $result['data']['hits']['hits'][0]['_source'] : false;
+		return $result;
+	}
 	public function delete($id)
 	{
 		try {
