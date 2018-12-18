@@ -20,6 +20,7 @@ class EsModel
 	protected $with = [];
 	protected $perPage = 15;
 	protected $pagesize = 15;
+	protected $firstpagesize = 0;
 	protected $page = 1;
 	protected $from = 0;
 	protected $sort = [];
@@ -31,7 +32,7 @@ class EsModel
 			$config     = config('setting.elasticsearch');
 			$this->host = $config['host'];
 			$this->port = $config['port'];
-		}else{
+		} else {
 			$this->host = $host['host'];
 			$this->port = $host['port'];
 		}
@@ -77,11 +78,19 @@ class EsModel
 		$this->sort = $sort;
 		return $this;
 	}
+	
 	public function from($from = 0)
 	{
 		$this->from = $from;
 		return $this;
 	}
+	
+	public function fristpagesize($firstpagesize = 0)
+	{
+		$this->firstpagesize = $firstpagesize;
+		return $this;
+	}
+	
 	public function page($page = 1)
 	{
 		$this->page = $page;
@@ -166,22 +175,23 @@ class EsModel
 		
 		return $this;
 	}
+	
 	public function transformHits($result)
 	{
-		$return_hits['data'] = [];
-		$page = $this->getQuery();
+		$return_hits['data']  = [];
+		$page                 = $this->getQuery();
 		$return_hits['total'] = 0;
 		if (isset($result['hits']['hits']) && count($result['hits']['hits']) > 0) {
 			$hits = $result['hits']['hits'];
 			foreach ($hits as $k => $v) {
-				$v['_source']['index'] = $v['_index'];
-				$v['_source']['index_id'] = array_search($v['_index'], (array)$this->index);
-				$return_hits['data'][] = $v['_source'];
+				$v['_source']['index']    = $v['_index'];
+				$v['_source']['index_id'] = array_search($v['_index'], (array) $this->index);
+				$return_hits['data'][]    = $v['_source'];
 			}
 //            $return_hits['data'] = arraySequence($return_hits['data'], 'score');
 			$return_hits['total'] = $result['hits']['total'];
 		}
-		$return_hits['page'] = $page['from'] / $page['size'] + 1;
+		$return_hits['page']     = $page['from'] / $page['size'] + 1;
 		$return_hits['pageSize'] = $page['size'];
 		return $return_hits;
 	}
@@ -202,6 +212,7 @@ class EsModel
 		$result = $this->transformHits($result['data']);
 		return $result;
 	}
+	
 	public function find()
 	{
 		try {
@@ -218,6 +229,7 @@ class EsModel
 		$result = ( isset($result['data']['hits']['hits']) && !empty($result['data']['hits']['hits']) ) ? $result['data']['hits']['hits'][0]['_source'] : false;
 		return $result;
 	}
+	
 	public function delete($id)
 	{
 		try {
@@ -300,12 +312,12 @@ class EsModel
 	
 	public function getQuery()
 	{
-		$page        = (int) app(Request::class)->get('page', $this->page);
-		$pageSize    = (int) app(Request::class)->get('pagesize', $this->pagesize);
-		
-		$from = ( $page - 1 ) * $pageSize;
-		if ($this->from){
-			$from = $this->from;
+		$page          = (int) $this->page;
+		$pageSize      = (int) $this->pagesize;
+		$firstpagesize = (int) $this->firstpagesize;
+		$from          = ( $page - 1 ) * $pageSize;
+		if ($this->from && $this->firstpagesize) {
+			$from = ( ( $page - 2 ) * $pageSize ) + $firstpagesize;
 		}
 		$this->query = [
 			"_source" => $this->sourceStatus,
