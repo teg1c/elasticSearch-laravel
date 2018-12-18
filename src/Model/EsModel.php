@@ -30,6 +30,9 @@ class EsModel
 			$config     = config('setting.elasticsearch');
 			$this->host = $config['host'];
 			$this->port = $config['port'];
+		}else{
+			$this->host = $host['host'];
+			$this->port = $host['port'];
 		}
 		if (!is_array($index)) {
 			$index = (array) $index;
