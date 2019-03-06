@@ -49,6 +49,10 @@ class ElasticsearchModel
 		return new static($index, $type);
 	}
 	
+	public function createIndex()
+	{
+		
+	}
 	public function select(...$selectParams)
 	{
 		if (!empty($selectParams)) {
