@@ -106,6 +106,9 @@ class EsModel
 	{
 		if (in_array($option, [ "=", ">", ">=", "<", "<=", "like", "==" ])) {
 			switch ($option) {
+				case "%"://左匹配
+					$this->params[] = [ 'prefix' => [ $firstParam => $secondParam ] ];
+					break;
 				case "=":
 					$this->params[] = [
 						"match" => [
