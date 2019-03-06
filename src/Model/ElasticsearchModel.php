@@ -39,20 +39,12 @@ class ElasticsearchModel
 	
 	public static function build($index, $type = '')
 	{
-		if (!is_array($index)) {
-			$index = (array) $index;
-		}
-		$type = $type ?? $index;
-		if (!$type) {
-			$type = $index;
-		}
+		$index = ( !is_array($index) ) ? (array) $index : $index;
+		$type  = $type ? (array) $type : $index;
+		
 		return new static($index, $type);
 	}
 	
-	public function createIndex()
-	{
-		
-	}
 	public function select(...$selectParams)
 	{
 		if (!empty($selectParams)) {
