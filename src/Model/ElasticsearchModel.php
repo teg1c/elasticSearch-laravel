@@ -34,7 +34,9 @@ class ElasticsearchModel {
 			->setOrmStatus(true)
 			->build();
 	}
-
+	/**
+	 * test
+	 */
 	public static function build($index, $type = '') {
 		$index = (!is_array($index)) ? (array) $index : $index;
 		$type  = $type ? (array) $type : $index;

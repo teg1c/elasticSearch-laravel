@@ -1,5 +1,5 @@
 <?php
-
+// 废弃
 namespace teg1c\elasticsearchBuilder\Model;
 
 use teg1c\elasticsearchBuilder\Builder\EsClientBuilder;
