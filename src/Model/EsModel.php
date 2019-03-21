@@ -208,6 +208,9 @@ class EsModel
 			             ->setBody($this->getQuery());
 			
 			$result = $this->client->search();
+			if ($result['msg'] != 'OK') {
+				throw new \Exception($result['msg']);
+			}
 		} catch (\Exception $e) {
 			throw $e;
 		}
