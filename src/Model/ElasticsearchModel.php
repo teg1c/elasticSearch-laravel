@@ -155,7 +155,24 @@ class ElasticsearchModel {
 
 		return $this;
 	}
-
+	public function transformHits($result)
+	{
+		$return_hits['data']  = [];
+		$page                 = $this->getQuery();
+		$return_hits['total'] = 0;
+		if (isset($result['hits']['hits']) && count($result['hits']['hits']) > 0) {
+			$hits = $result['hits']['hits'];
+			foreach ($hits as $k => $v) {
+				$v['_source']['index']    = $v['_index'];
+				$return_hits['data'][]    = $v['_source'];
+			}
+//            $return_hits['data'] = arraySequence($return_hits['data'], 'score');
+			$return_hits['total'] = $result['hits']['total'];
+		}
+		$return_hits['page']     = $page['from'] / $page['size'] + 1;
+		$return_hits['pageSize'] = $page['size'];
+		return $return_hits;
+	}
 	public function get() {
 		try {
 			$this->client->getParamsBuilder()
