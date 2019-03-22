@@ -24,7 +24,7 @@ class ElasticsearchModel
 	protected $page = 1;
 	protected $sort = [];
 	protected $client = null;
-	
+	protected $customQuery = null;
 	public function __construct($index, $type, $host, $port)
 	{
 		
@@ -186,7 +186,11 @@ class ElasticsearchModel
 		$return_hits['pageSize'] = $page['size'];
 		return $return_hits;
 	}
-	
+	public function customQuery($query = null)
+	{
+		$this->customQuery = $query;
+		return $this;
+	}
 	public function get()
 	{
 		try {
@@ -311,6 +315,15 @@ class ElasticsearchModel
 				$from = ( ( $page - 2 ) * $pageSize ) + $firstpagesize;
 			}
 		}*/
+		if ($this->customQuery != null){
+			return [
+				"_source" => $this->sourceStatus,
+				"query"   => $this->customQuery,
+				'sort'    => $this->sort,
+				'size'    => $pageSize,
+				'from'    => $from,
+			];
+		}
 		$this->query = [
 			"_source" => $this->sourceStatus,
 			"query"   => [
