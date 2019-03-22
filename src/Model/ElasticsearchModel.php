@@ -191,6 +191,20 @@ class ElasticsearchModel
 		$this->customQuery = $query;
 		return $this;
 	}
+	public function createMapping($data)
+	{
+		try {
+			$this->client->getParamsBuilder()
+			             ->setMethod("create")
+			             ->setIndex($this->index)
+			             ->setBody($data);
+			
+			$result = $this->client->create();
+		} catch (\Exception $e) {
+			throw $e;
+		}
+		return $result;
+	}
 	public function get()
 	{
 		try {
